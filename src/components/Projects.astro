@@ -54,12 +54,12 @@ const PROJECTS = [
             </li>
           ))}
         </ul>
-        <img
+        {image && <img
           loading="lazy"
           class="rounded shadow-2xl shadow-white/10 aspect-video"
           src={image}
           alt={`Screenshot of project ${image}`}
-        />
+        />}
         <footer class="flex gap-x-4 items-end justify-start mt-4">
           {github && (
             <LinkButton href={github}>
