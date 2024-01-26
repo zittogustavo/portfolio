@@ -49,6 +49,7 @@ const navItems = [
 </header>
 
 <script>
+  document.documentElement.classList.add('dark');
   document.addEventListener("astro:page-load", () => {
     const sections = document.querySelectorAll("section");
     const navItems = document.querySelectorAll("header nav a");
