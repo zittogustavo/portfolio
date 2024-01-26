@@ -3,7 +3,7 @@ import LinkButton from "./LinkButton.astro"
 
 interface Props {
   title: string
-  description: string
+  description: any
   company?: string
   link?: string
   date: string
@@ -27,7 +27,7 @@ const { title, description, company, link, date } = Astro.props
   {title}
 </h3>
 map((experiencie) => (
-{description.split("*").map((desc) => (<p class="mb-4 text-base font-normal dark:text-gray-200 text-pretty"> desc </p>))}
+{description.map((desc) => (<p class="mb-4 text-base font-normal dark:text-gray-200 text-pretty"> desc </p>))}
 
 {
   link && (
