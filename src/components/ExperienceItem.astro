@@ -4,11 +4,12 @@ import LinkButton from "./LinkButton.astro"
 interface Props {
   title: string
   description: string
+  company: string
   link?: string
   date: string
 }
 
-const { title, description, link, date } = Astro.props
+const { title, description, company, link, date } = Astro.props
 ---
 
 <div
@@ -25,10 +26,13 @@ const { title, description, link, date } = Astro.props
 <p class="mb-4 text-base font-normal dark:text-gray-200 text-pretty">
   {description}
 </p>
+<p class="mb-4 text-base font-normal dark:text-gray-200 text-pretty">
+  {company}
+</p>
 {
   link && (
     <LinkButton href={link}>
-      Saber más...{" "}
+      Know more...{" "}
       <svg
         class="w-3 h-3 ms-2 rtl:rotate-180"
         aria-hidden="true"
