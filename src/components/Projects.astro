@@ -1,6 +1,10 @@
 ---
 import GitHub from "./icons/GitHub.astro"
 import NextJS from "./icons/NextJS.astro"
+import ExpressJS from "./icons/ExpressJS.astro"
+import Angular from "./icons/Angular.astro"
+import Typescript from "./icons/Typescript.astro"
+import PostgreSQL from "./icons/PostgreSQL.astro"
 import Tailwind from "./icons/Tailwind.astro"
 import LinkButton from "./LinkButton.astro"
 
@@ -8,12 +12,27 @@ const TAGS = {
   EXPRESS: {
     name: "Express.js",
     class: "bg-black text-white",
-    icon: NextJS,
+    icon: ExpressJS,
   },
   TAILWIND: {
     name: "Tailwind CSS",
     class: "bg-[#003159] text-white",
     icon: Tailwind,
+  },
+  ANGULAR: {
+    name: "Angular",
+    class: "bg-[#003159] text-white",
+    icon: Angular,
+  },
+  TYPESCRIPT: {
+    name: "Typescript",
+    class: "bg-[#003159] text-white",
+    icon: Typescript,
+  },
+  POSTGRE_SQL: {
+    name: "PostgreSQL",
+    class: "bg-[#003159] text-white",
+    icon: PostgreSQL,
   },
 }
 const PROJECTS = [
@@ -23,13 +42,14 @@ const PROJECTS = [
     link: "https://zittogustavo.github.io/green-red-game/home",
     github: "https://github.com/zittogustavo/green-red-game",
     image: "/projects/green_red_game.webp",
+    tags: [TAGS.ANGULAR, TAGS.TYPESCRIPT],
   },
   {
     title: "ExpressJS REST API",
-    description: "REST API build using ExpressJS framework",
+    description: "CRUD REST API. Deploy on Render.com",
     link: "https://express-app-s1uu.onrender.com/",
     github: "https://github.com/zittogustavo/express-app",
-    tags: [TAGS.EXPRESS, TAGS.TAILWIND],
+    tags: [TAGS.EXPRESS, TAGS.POSTGRE_SQL],
   },
 ]
 ---
@@ -56,7 +76,7 @@ const PROJECTS = [
         </ul>
         {image && <img
           loading="lazy"
-          class="rounded shadow-2xl shadow-white/10 aspect-video"
+          class="rounded shadow-2xl shadow-white/10"
           src={image}
           alt={`Screenshot of project ${image}`}
         />}
