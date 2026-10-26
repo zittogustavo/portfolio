@@ -1,7 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import '@/styles/global.css';
-import { profile } from '@/data/profile';
+import { LOOKS, profile } from '@/data/profile';
 import { defaultLang, languages, langs, localePath, useTranslations, type Lang } from '@/i18n/ui';
 
 interface Props {
@@ -50,15 +50,17 @@ const personSchema = {
     {!noindex && <link rel="alternate" hreflang="x-default" href={new URL(localePath(defaultLang, path), site).href} />}
 
     <!-- Theme + preloader decided before first paint: no flash, no layout shift. -->
-    <script is:inline>
+    <script is:inline define:vars={{ looks: LOOKS }}>
       (() => {
         const d = document.documentElement;
-        let theme, seen;
+        let theme, look, seen;
         try {
           theme = localStorage.getItem('theme');
+          look = localStorage.getItem('look');
           seen = sessionStorage.getItem('pl');
         } catch {}
         d.dataset.theme = theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        d.dataset.look = looks.includes(look) ? look : looks[0];
         if (!seen && !matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('pl');
       })();
     </script>
@@ -66,7 +68,7 @@ const personSchema = {
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" preload />
 
-    <meta name="theme-color" content="#f1f0ec" />
+    <meta name="theme-color" content="#e9e7e3" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />

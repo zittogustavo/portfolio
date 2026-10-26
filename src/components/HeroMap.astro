@@ -1,0 +1,228 @@
+---
+import { places } from '@/data/profile';
+import { MAP_VIEWBOX, project } from '@/data/worldDots';
+import { useTranslations, type Lang } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const t = useTranslations(Astro.props.lang);
+const { x: vx, y: vy, width: vw, height: vh } = MAP_VIEWBOX;
+
+const pins = places.map((place) => {
+  const { x, y } = project(place.lat, place.lon);
+  const lat = `${Math.abs(place.lat).toFixed(1)}°${place.lat < 0 ? 'S' : 'N'}`;
+  const lon = `${Math.abs(place.lon).toFixed(1)}°${place.lon < 0 ? 'W' : 'E'}`;
+  return { ...place, x, y, left: ((x - vx) / vw) * 100, top: ((y - vy) / vh) * 100, coords: `${lat} ${lon}` };
+});
+
+type Pt = { x: number; y: number };
+/** Great-circle-ish arc: a quadratic curve lifted towards the north, proportional to distance. */
+const control = (a: Pt, b: Pt) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - Math.hypot(b.x - a.x, b.y - a.y) * 0.28 });
+const arc = (a: Pt, b: Pt) => {
+  const c = control(a, b);
+  return `M${a.x} ${a.y}Q${c.x} ${c.y} ${b.x} ${b.y}`;
+};
+
+// Journey: Buenos Aires → Málaga → Barcelona; then the link that is live today, Barcelona ⇄ Buenos Aires.
+const journey = pins.slice(1).map((p, i) => arc(pins[i], p));
+const home = pins.find((p) => p.home)!;
+const remote = pins[pins.length - 1];
+const now = arc(remote, home);
+// Label sits on the curve's midpoint (B(0.5) of the quadratic), as a % of the map box.
+const c = control(remote, home);
+const mid = { x: 0.25 * remote.x + 0.5 * c.x + 0.25 * home.x, y: 0.25 * remote.y + 0.5 * c.y + 0.25 * home.y };
+const nowLabel = { left: ((mid.x - vx) / vw) * 100, top: ((mid.y - vy) / vh) * 100 };
+---
+
+<div class="map" role="img" aria-label={t('map.label')}>
+  <div class="map-dots"></div>
+  <svg class="map-routes" viewBox={`${vx} ${vy} ${vw} ${vh}`} aria-hidden="true">
+    {journey.map((d) => <path class="route" d={d} pathLength="1" />)}
+    <path class="route route--now" d={now} pathLength="1" />
+  </svg>
+  {
+    pins.map((pin) => (
+      <span class:list={['pin', { 'pin--home': pin.home }]} style={`left:${pin.left}%;top:${pin.top}%`} aria-hidden="true">
+        <span class="pin-dot" />
+        <span class="pin-label mono">
+          {pin.name}
+          <span class="pin-coords">{pin.coords}</span>
+        </span>
+      </span>
+    ))
+  }
+  <span class="now-label mono" style={`left:${nowLabel.left}%;top:${nowLabel.top}%`} aria-hidden="true">{t('map.now')}</span>
+</div>
+
+<style>
+  /* Equirectangular frame. A reference point in the Atlantic (lon -28°, lat 4°) is pinned to
+     (--at-x, --at-y) of the hero, so Buenos Aires and Spain land in the free space around the
+     portrait at every breakpoint. */
+  .map {
+    --ref-x: 42.22%;
+    --ref-y: 55.71%;
+    position: absolute;
+    left: var(--at-x, 50%);
+    top: var(--at-y, 50%);
+    width: var(--map-w, max(215vw, 52rem));
+    aspect-ratio: 360 / 140;
+    translate: calc(-1 * var(--ref-x)) calc(-1 * var(--ref-y));
+  }
+
+  @media (min-width: 52rem) {
+    .map {
+      --at-x: 36%;
+      --at-y: 30%;
+      --map-w: max(95vw, 150svh);
+    }
+  }
+
+  .map-dots {
+    position: absolute;
+    inset: 0;
+    background: var(--map-dot);
+    mask: url('/world-dots.svg') center / 100% 100% no-repeat;
+  }
+
+  /* Motion look: the world rushes past while the portrait stays sharp. */
+  :global(:root[data-look='motion']) .map-dots {
+    filter: blur(2.5px);
+    animation: rush 1.8s ease-in-out infinite alternate;
+  }
+
+  @keyframes rush {
+    from {
+      transform: translateX(-1.2%) scaleX(1.04);
+    }
+    to {
+      transform: translateX(1.2%) scaleX(1.04);
+    }
+  }
+
+  .map-routes {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .route {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0.55;
+    animation: draw 1.6s var(--ease-in-out) 0.4s forwards;
+  }
+
+  .route:nth-child(2) {
+    animation-delay: 0.9s;
+  }
+
+  .route--now {
+    stroke-dasharray: 0.006 0.006;
+    stroke-dashoffset: 0;
+    opacity: 0;
+    animation: fade-in 1s ease 1.8s forwards;
+  }
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    to {
+      opacity: 0.75;
+    }
+  }
+
+  .pin {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    translate: -0.25rem -50%;
+  }
+
+  .pin-dot {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .pin-dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid var(--accent);
+    animation: ping 2.4s var(--ease-out) infinite;
+  }
+
+  .pin--home .pin-dot::after {
+    animation-duration: 1.6s;
+  }
+
+  .pin-label {
+    display: grid;
+    font-size: 0.625rem;
+    line-height: 1.35;
+    color: var(--fg);
+    white-space: nowrap;
+  }
+
+  .pin-coords {
+    color: var(--muted);
+  }
+
+  .now-label {
+    position: absolute;
+    translate: -100% -140%;
+    font-size: 0.5625rem;
+    color: var(--accent-ink);
+    white-space: nowrap;
+    opacity: 0;
+    animation: fade-in 1s ease 2s forwards;
+  }
+
+  @keyframes ping {
+    from {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(3.2);
+      opacity: 0;
+    }
+  }
+
+  /* Málaga and Barcelona sit close together: stack Málaga's label below its dot. */
+  .pin:nth-of-type(2) {
+    flex-direction: column;
+    align-items: flex-start;
+    translate: -0.25rem -0.25rem;
+  }
+
+  .pin:nth-of-type(2) .pin-label {
+    order: 1;
+    margin-top: 0.35rem;
+  }
+
+  /* Small screens: home label on the left so it clears the portrait below. */
+  @media (max-width: 52rem) {
+    .pin--home {
+      flex-direction: row-reverse;
+      translate: calc(-100% + 0.25rem) -50%;
+      text-align: right;
+    }
+  }
+</style>

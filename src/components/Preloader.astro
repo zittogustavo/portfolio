@@ -1,24 +1,54 @@
 ---
-import { useTranslations, type Lang } from '@/i18n/ui';
+import { CAREER_START_YEAR, experience } from '@/data/profile';
+import { localize, useTranslations, type Lang } from '@/i18n/ui';
 
 interface Props {
   lang: Lang;
 }
 
-const t = useTranslations(Astro.props.lang);
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const endYear = new Date().getFullYear();
+const span = endYear - CAREER_START_YEAR;
+
+// The career as a timeline: one milestone per job, oldest first.
+const milestones = [...experience]
+  .sort((a, b) => a.start.localeCompare(b.start))
+  .map((job) => ({
+    year: Number(job.start.slice(0, 4)),
+    company: localize(job.short ?? job.company, lang),
+    city: job.place[lang].split(' · ')[0],
+  }));
+const ticks = [...new Set(milestones.map((m) => m.year))];
 ---
 
 <!--
   Shown once per session. The inline script in <head> adds `html.pl` before first paint
   (never with reduced motion or without JS), so the page below is always fully rendered.
-  The character is the hero's own SVG, lifted above this overlay and parked on `.pl-stage`,
-  so there is a single illustration in the DOM and it lands exactly where it lives.
 -->
-<div class="preloader" id="preloader" aria-hidden="true">
-  <div class="pl-stage"></div>
-  <p class="pl-status mono">{t('preloader.status')}<span class="pl-dots"></span></p>
-  <p class="pl-skip mono">{t('preloader.skip')}</p>
-  <p class="pl-count"><span class="pl-num">0</span><span class="pl-pct">%</span></p>
+<div class="preloader" id="preloader" aria-hidden="true" data-milestones={JSON.stringify(milestones)}>
+  <p class="pl-corner mono">Gustavo Zitto — {CAREER_START_YEAR}/{endYear}</p>
+  <p class="pl-corner pl-skip mono">{t('preloader.skip')}</p>
+
+  <div class="pl-center">
+    <p class="pl-year">{CAREER_START_YEAR}</p>
+    <div class="pl-track">
+      <span class="pl-fill"></span>
+      {
+        ticks.map((year) => (
+          <span class="pl-tick" data-year={year} style={`left:${((year - CAREER_START_YEAR) / span) * 100}%`}>
+            <span class="pl-tick-label mono">{year}</span>
+          </span>
+        ))
+      }
+    </div>
+    <p class="pl-caption mono">
+      <span class="pl-company">{milestones[0].company}</span>
+      <span class="muted"> · <span class="pl-city">{milestones[0].city}</span></span>
+    </p>
+  </div>
+
+  <p class="pl-status mono">{t('preloader.status')} <span class="pl-pct">0</span>%</p>
 </div>
 
 <script>
@@ -26,22 +56,22 @@ const t = useTranslations(Astro.props.lang);
   const preloader = document.getElementById('preloader');
 
   if (preloader && root.classList.contains('pl')) {
-    const num = preloader.querySelector<HTMLElement>('.pl-num')!;
-    const slot = preloader.querySelector<HTMLElement>('.pl-stage')!;
-    const dev = document.querySelector<SVGSVGElement>('.hero-dev');
+    type Milestone = { year: number; company: string; city: string };
+    const milestones: Milestone[] = JSON.parse(preloader.dataset.milestones ?? '[]');
+    const yearEl = preloader.querySelector<HTMLElement>('.pl-year')!;
+    const fill = preloader.querySelector<HTMLElement>('.pl-fill')!;
+    const pct = preloader.querySelector<HTMLElement>('.pl-pct')!;
+    const caption = preloader.querySelector<HTMLElement>('.pl-caption')!;
+    const company = preloader.querySelector<HTMLElement>('.pl-company')!;
+    const city = preloader.querySelector<HTMLElement>('.pl-city')!;
+    const ticks = [...preloader.querySelectorAll<HTMLElement>('.pl-tick')];
 
-    if (dev) {
-      const a = dev.getBoundingClientRect();
-      const b = slot.getBoundingClientRect();
-      dev.style.transformOrigin = '0 0';
-      dev.style.transform = `translate(${b.left - a.left}px, ${b.top - a.top}px) scale(${b.width / a.width})`;
-      root.classList.add('pl-ready');
-    }
-
-    const DURATION = 1400;
-    // Ease that stalls a bit in the middle, like a real loader.
-    const ease = (p: number) => (p < 0.5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2) * 0.7 + p * 0.3;
+    const first = milestones[0].year;
+    const last = new Date().getFullYear();
+    const DURATION = 1700;
+    const ease = (p: number) => (p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2);
     const start = performance.now();
+    let shown = 0;
     let skipped = false;
 
     const skip = () => (skipped = true);
@@ -50,9 +80,28 @@ const t = useTranslations(Astro.props.lang);
 
     const tick = (now: number) => {
       const p = skipped ? 1 : Math.min((now - start) / DURATION, 1);
-      num.textContent = String(Math.round(ease(p) * 100));
+      const e = ease(p);
+      const year = Math.round(first + e * (last - first));
+      yearEl.textContent = String(year);
+      pct.textContent = String(Math.round(e * 100));
+      fill.style.transform = `scaleX(${e})`;
+      for (const el of ticks) el.classList.toggle('on', Number(el.dataset.year) <= year);
+
+      // Latest milestone reached; swap the caption when it changes.
+      let reached = 0;
+      milestones.forEach((m, i) => m.year <= year && (reached = i));
+      if (reached !== shown) {
+        shown = reached;
+        company.textContent = milestones[reached].company;
+        city.textContent = milestones[reached].city;
+        caption.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], {
+          duration: 260,
+          easing: 'ease-out',
+        });
+      }
+
       if (p < 1) requestAnimationFrame(tick);
-      else finish();
+      else setTimeout(finish, 280);
     };
     requestAnimationFrame(tick);
 
@@ -62,24 +111,11 @@ const t = useTranslations(Astro.props.lang);
       try {
         sessionStorage.setItem('pl', '1');
       } catch {}
-
       root.classList.add('pl-out');
-
-      // Fly the character home: animate its parking transform back to none.
-      const DURATION_OUT = 800;
-      if (dev) {
-        dev.animate([{ transform: dev.style.transform }, { transform: 'none' }], {
-          duration: DURATION_OUT,
-          easing: 'cubic-bezier(0.76, 0, 0.24, 1)',
-        });
-        dev.style.transform = '';
-        dev.style.transformOrigin = '';
-      }
-
       setTimeout(() => {
-        root.classList.remove('pl', 'pl-ready', 'pl-out');
+        root.classList.remove('pl', 'pl-out');
         preloader!.remove();
-      }, DURATION_OUT + 50);
+      }, 850);
     }
   }
 </script>
@@ -94,110 +130,127 @@ const t = useTranslations(Astro.props.lang);
     inset: 0;
     z-index: 90;
     display: grid;
-    grid-template: 'status skip' auto '. .' 1fr 'stage stage' auto '. .' 1fr 'count count' auto / 1fr auto;
+    grid-template: 'a b' auto 'c c' 1fr 'd d' auto / 1fr auto;
     padding: var(--gutter);
     background: var(--bg);
+    box-shadow: var(--glow);
     cursor: progress;
     contain: layout paint style;
-    transition: background-color 0.7s var(--ease-in-out) 0.25s;
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.8s var(--ease-in-out);
     /* Failsafe: never keep the page covered if the script dies. */
     animation: pl-failsafe 0s 6s forwards;
   }
 
   :global(html.pl-out) .preloader {
-    background-color: transparent;
+    clip-path: inset(0 0 100% 0);
     pointer-events: none;
   }
 
-  .pl-stage {
-    grid-area: stage;
-    justify-self: center;
-    width: min(72vw, 21rem);
-    aspect-ratio: 400 / 410;
-  }
-
-  /* No scrolling under the overlay (released by the failsafe too). */
   :global(html.pl) {
     overflow: hidden;
     animation: pl-unlock 0s 6s forwards;
   }
 
-  @keyframes pl-unlock {
-    to {
-      overflow: visible;
-    }
-  }
-
-  .pl-status {
-    grid-area: status;
+  .pl-corner {
+    grid-area: a;
   }
 
   .pl-skip {
-    grid-area: skip;
+    grid-area: b;
     color: var(--muted);
-    text-align: right;
   }
 
-  .pl-dots::after {
-    content: '';
-    animation: pl-dots 1.2s steps(4) infinite;
+  .pl-center {
+    grid-area: c;
+    align-self: center;
+    justify-self: center;
+    display: grid;
+    gap: 1.75rem;
+    width: min(100%, 34rem);
+    transition:
+      transform 0.8s var(--ease-in-out),
+      opacity 0.5s;
   }
 
-  .pl-count {
-    grid-area: count;
-    justify-self: end;
-    display: flex;
-    align-items: flex-start;
-    font-size: clamp(6rem, 24vw, 17rem);
+  :global(html.pl-out) .pl-center {
+    transform: translateY(-2rem);
+    opacity: 0;
+  }
+
+  .pl-year {
+    font-size: clamp(3.5rem, 10vw, 6rem);
     font-weight: 300;
-    line-height: 0.8;
-    letter-spacing: -0.06em;
+    letter-spacing: -0.05em;
+    line-height: 1;
     font-variant-numeric: tabular-nums;
   }
 
-  /* Fixed width: the counter grows without shifting the % sign. */
-  .pl-num {
-    min-width: 3ch;
-    text-align: right;
+  .pl-track {
+    position: relative;
+    height: 1px;
+    background: var(--line);
   }
 
-  .pl-pct {
-    font-size: 0.25em;
-    margin-top: 0.15em;
-    letter-spacing: 0;
+  .pl-fill {
+    position: absolute;
+    inset: 0;
+    background: var(--fg);
+    transform: scaleX(0);
+    transform-origin: left;
   }
 
-  .pl-status,
-  .pl-skip,
-  .pl-count {
+  .pl-tick {
+    position: absolute;
+    top: -3px;
+    width: 7px;
+    height: 7px;
+    margin-left: -3.5px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--muted);
     transition:
-      opacity 0.35s ease,
-      transform 0.5s var(--ease-in-out);
+      background-color 0.2s,
+      border-color 0.2s,
+      transform 0.3s var(--ease-out);
   }
 
-  :global(html.pl-out) :is(.pl-status, .pl-skip, .pl-count) {
-    opacity: 0;
-    transform: translateY(1.5rem);
+  .pl-tick:global(.on) {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: scale(1.3);
   }
 
-  @keyframes pl-dots {
-    0% {
-      content: '';
-    }
-    25% {
-      content: '.';
-    }
-    50% {
-      content: '..';
-    }
-    75% {
-      content: '...';
-    }
+  .pl-tick-label {
+    position: absolute;
+    top: 0.9rem;
+    left: 50%;
+    translate: -50% 0;
+    font-size: 0.625rem;
+    color: var(--muted);
+  }
+
+  .pl-caption {
+    margin-top: 1rem;
+    min-height: 1.6em;
+  }
+
+  .pl-status {
+    grid-area: d;
+    justify-self: end;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
   }
 
   @keyframes pl-failsafe {
     to {
       visibility: hidden;
+    }
+  }
+
+  @keyframes pl-unlock {
+    to {
+      overflow: visible;
     }
   }
 

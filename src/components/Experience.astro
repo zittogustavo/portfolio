@@ -11,20 +11,20 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<section id="experience" class="section container lazy-render" style="--intrinsic-height:2800px" aria-labelledby="experience-title">
-  <div class="section-head">
-    <h2 id="experience-title" class="section-title reveal-x">{t('exp.title')}</h2>
-    <span class="mono muted">2009 — {new Date().getFullYear()}</span>
-  </div>
+<section id="experience" class="section container lazy-render" style="--intrinsic-height:2400px" aria-labelledby="experience-title">
+  <header class="section-head">
+    <p class="mono muted">(02)</p>
+    <h2 id="experience-title" class="section-title">{t('exp.title')}</h2>
+  </header>
 
   <ol class="jobs">
     {
       experience.map((job) => {
         const company = localize(job.company, lang);
         return (
-          <li class:list={['job reveal', { current: job.current }]}>
+          <li class="job reveal">
             <div class="job-when mono">
-              <p>
+              <p class:list={{ current: !job.end }}>
                 <time datetime={job.start}>{formatMonth(job.start, lang)}</time>
                 {' — '}
                 {job.end ? <time datetime={job.end}>{formatMonth(job.end, lang)}</time> : t('exp.present')}
@@ -33,24 +33,27 @@ const t = useTranslations(lang);
             </div>
 
             <div class="job-main">
-              <h3 class="job-role">{job.role[lang]}</h3>
-              <p class="job-company">
-                {job.url ? (
-                  <a href={job.url} target="_blank" rel="noopener" class="link">
-                    {company}
-                    <Arrow />
-                    <span class="sr-only">({t('a11y.newTab')})</span>
-                  </a>
-                ) : (
-                  company
-                )}
-              </p>
-              <ul class="job-points">
+              <h3 class="job-role">
+                {job.role[lang]}
+                <span class="muted">
+                  {' · '}
+                  {job.url ? (
+                    <a href={job.url} target="_blank" rel="noopener" class="link">
+                      {company}
+                      <Arrow />
+                      <span class="sr-only">({t('a11y.newTab')})</span>
+                    </a>
+                  ) : (
+                    company
+                  )}
+                </span>
+              </h3>
+              <ul class="dash-list muted">
                 {job.highlights[lang].map((point) => (
                   <li>{point}</li>
                 ))}
               </ul>
-              {job.current && <p class="mono muted job-tags-label">{t('exp.languages')}</p>}
+              {job.tagsAreLanguages && <p class="mono muted">{t('exp.languages')}</p>}
               <ul class="chips">
                 {job.tags.map((tag) => (
                   <li class="chip">{tag}</li>
@@ -66,18 +69,14 @@ const t = useTranslations(lang);
 
 <style>
   .jobs {
-    display: grid;
+    border-top: 1px solid var(--line);
   }
 
   .job {
     display: grid;
-    gap: 1rem;
-    padding-block: clamp(1.75rem, 4vw, 3rem);
+    gap: 0.9rem;
+    padding-block: clamp(1.75rem, 3.5vw, 2.5rem);
     border-bottom: 1px solid var(--line);
-  }
-
-  .job:first-child {
-    padding-top: 0;
   }
 
   .job-when {
@@ -86,73 +85,41 @@ const t = useTranslations(lang);
     align-content: start;
   }
 
-  .current .job-when p:first-child::before {
+  .current::before {
     content: '';
     display: inline-block;
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.4rem;
+    height: 0.4rem;
     margin-right: 0.5rem;
     border-radius: 50%;
     background: var(--accent);
-    vertical-align: 0.05em;
+    vertical-align: 0.1em;
   }
 
   .job-main {
     display: grid;
     gap: 0.75rem;
-    max-width: 52rem;
+    max-width: 44rem;
   }
 
   .job-role {
-    font-size: clamp(1.5rem, 3.2vw, 2.5rem);
-    letter-spacing: -0.035em;
-    line-height: 1.05;
+    font-size: 1.125rem;
+    letter-spacing: -0.015em;
   }
 
-  .job-company a {
+  .job-role a {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
-  }
-
-  .job-company {
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .job-points {
-    display: grid;
-    gap: 0.5rem;
-    margin-block: 0.5rem;
-  }
-
-  .job-points li {
-    position: relative;
-    padding-left: 1.1rem;
-  }
-
-  .job-points li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.75em;
-    width: 0.45rem;
-    height: 1.5px;
-    background: var(--muted);
-  }
-
-  .job-tags-label {
-    margin-bottom: -0.25rem;
-  }
-
-  .current .chip {
-    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    gap: 0.25rem;
   }
 
   @media (min-width: 52rem) {
     .job {
-      grid-template-columns: minmax(14rem, 1fr) 2.5fr;
-      column-gap: 3rem;
+      grid-template-columns: 12rem minmax(0, 1fr);
+    }
+
+    .job-when {
+      padding-top: 0.2rem;
     }
   }
 </style>

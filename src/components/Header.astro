@@ -20,7 +20,7 @@ const links = [
 <header class="header">
   <div class="header-inner container">
     <a href={localePath(lang)} class="brand" aria-label={t('a11y.home')}>
-      Gustavo Zitto<span class="brand-mark">©</span>
+      <span class="brand-mark" aria-hidden="true"></span>Gustavo Zitto
     </a>
 
     <nav class="nav-desktop" aria-label={t('a11y.mainNav')}>
@@ -46,7 +46,7 @@ const links = [
         data-label-dark={t('a11y.theme', { theme: t('a11y.theme.dark') })}
         aria-label={t('a11y.theme', { theme: t('a11y.theme.dark') })}
       >
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
           <mask id="moon-mask">
             <rect width="24" height="24" fill="#fff"></rect>
             <circle class="moon-bite" cx="24" cy="4" r="9" fill="#000"></circle>
@@ -57,9 +57,7 @@ const links = [
           </g>
         </svg>
       </button>
-      <a href="#contact" class="cta">
-        <span class="cta-dot" aria-hidden="true"></span>{t('cta.talk')}
-      </a>
+      <a href="#contact" class="cta">{t('nav.contact')}</a>
       <button type="button" class="ctrl ctrl-menu" popovertarget="mobile-menu" aria-label={t('a11y.menu')}>
         <span aria-hidden="true"></span>
       </button>
@@ -98,7 +96,7 @@ const links = [
   const toggle = document.getElementById('theme-toggle') as HTMLButtonElement;
   const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
   // Same values as --bg; hardcoded so syncing never forces a style recalc.
-  const themeColor: Record<string, string> = { light: '#f1f0ec', dark: '#0e0e0d' };
+  const themeColor: Record<string, string> = { light: '#e9e7e3', dark: '#131210' };
 
   const sync = () => {
     const dark = root.dataset.theme === 'dark';
@@ -111,6 +109,7 @@ const links = [
   const apply = (theme: string) => {
     root.dataset.theme = theme;
     sync();
+    dispatchEvent(new Event('themechange'));
   };
 
   toggle.addEventListener('click', () => {
@@ -152,24 +151,21 @@ const links = [
     inset: 0 0 auto;
     z-index: 50;
     border-bottom: 1px solid transparent;
-  }
-
-  /* Solid from the start where scroll timelines aren't supported (zero-length animation). */
-  .header {
+    /* Solid from the start where scroll timelines aren't supported (zero-length animation). */
     animation: header-solid linear both;
   }
 
   @supports (animation-timeline: scroll()) {
     .header {
       animation-timeline: scroll();
-      animation-range: 0 12rem;
+      animation-range: 0 6rem;
     }
   }
 
   @keyframes header-solid {
     to {
-      background: color-mix(in srgb, var(--bg) 78%, transparent);
-      backdrop-filter: blur(14px);
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      backdrop-filter: blur(12px);
       border-color: var(--line);
     }
   }
@@ -179,53 +175,66 @@ const links = [
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    height: 4.25rem;
+    height: 3.75rem;
+    font-size: 0.875rem;
   }
 
   .brand {
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     white-space: nowrap;
   }
 
   .brand-mark {
-    display: inline-block;
-    margin-left: 0.15em;
-    font-size: 0.75em;
-    vertical-align: super;
-    transition: transform 0.6s var(--ease-out);
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+    transition: transform 0.4s var(--ease-out);
   }
 
   .brand:hover .brand-mark {
-    transform: rotate(360deg);
+    transform: scale(1.5);
   }
 
   .nav-desktop ul {
     display: flex;
-    gap: clamp(1rem, 2.5vw, 2.25rem);
-    font-size: 0.9375rem;
+    gap: clamp(1rem, 2.5vw, 2rem);
+  }
+
+  .nav-desktop a {
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+
+  .nav-desktop a:hover {
+    color: var(--fg);
   }
 
   .controls {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem;
   }
 
   .ctrl {
     display: grid;
     place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid var(--line);
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: 999px;
-    transition:
-      background-color 0.2s,
-      border-color 0.2s;
+    transition: background-color 0.2s;
   }
 
   .ctrl:hover {
-    border-color: var(--fg);
+    background: var(--line);
+  }
+
+  .ctrl-lang {
+    font-size: 0.6875rem;
   }
 
   /* Sun ↔ moon morph */
@@ -261,29 +270,19 @@ const links = [
   }
 
   .cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    height: 2.75rem;
-    padding-inline: 1.1rem;
+    margin-left: 0.35rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--fg);
     border-radius: 999px;
-    background: var(--fg);
-    color: var(--bg);
-    font-size: 0.9375rem;
-    font-weight: 500;
     white-space: nowrap;
-    transition: transform 0.3s var(--ease-out);
+    transition:
+      background-color 0.25s,
+      color 0.25s;
   }
 
   .cta:hover {
-    transform: scale(1.04);
-  }
-
-  .cta-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--accent);
+    background: var(--fg);
+    color: var(--bg);
   }
 
   .ctrl-menu {
@@ -293,8 +292,8 @@ const links = [
   .ctrl-menu span,
   .ctrl-menu span::before {
     display: block;
-    width: 1rem;
-    height: 1.5px;
+    width: 0.95rem;
+    height: 1px;
     background: currentColor;
     box-shadow: 0 -4px 0 currentColor;
   }
@@ -313,9 +312,10 @@ const links = [
     max-width: none;
     max-height: none;
     margin: 0;
-    padding: 6rem var(--gutter) var(--gutter);
+    padding: 5.5rem var(--gutter) var(--gutter);
     border: 0;
     background: var(--bg);
+    box-shadow: var(--glow);
     color: var(--fg);
     opacity: 0;
     transition:
@@ -336,20 +336,19 @@ const links = [
 
   .nav-mobile ul {
     display: grid;
-    gap: 0.5rem;
   }
 
   .nav-mobile li {
     border-bottom: 1px solid var(--line);
     transition:
-      transform 0.5s var(--ease-out) calc(var(--i) * 60ms),
-      opacity 0.5s var(--ease-out) calc(var(--i) * 60ms);
+      transform 0.5s var(--ease-out) calc(var(--i) * 50ms),
+      opacity 0.5s var(--ease-out) calc(var(--i) * 50ms);
   }
 
   @starting-style {
     .nav-mobile:popover-open li {
       opacity: 0;
-      transform: translateY(1.5rem);
+      transform: translateY(1rem);
     }
   }
 
@@ -357,11 +356,15 @@ const links = [
     display: flex;
     align-items: baseline;
     gap: 1rem;
-    padding-block: 0.75rem;
-    font-size: clamp(2.25rem, 11vw, 3.5rem);
-    font-weight: 600;
-    letter-spacing: -0.04em;
-    text-transform: uppercase;
+    padding-block: 1rem;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .menu-close {
+    position: absolute;
+    top: 0.75rem;
+    right: var(--gutter);
   }
 
   @media (max-width: 52rem) {
@@ -372,12 +375,6 @@ const links = [
     .ctrl-menu {
       display: grid;
     }
-  }
-
-  .menu-close {
-    position: absolute;
-    top: 0.75rem;
-    right: var(--gutter);
   }
 
   @media (max-width: 30rem) {

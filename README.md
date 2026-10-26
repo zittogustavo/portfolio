@@ -22,7 +22,9 @@ Requires Node 22.22+.
 | Profile, experience, projects (one source, text per language) | `src/data/profile.ts` |
 | UI strings and i18n helpers | `src/i18n/ui.ts` |
 | Page template (renders `/` and `/es/`) | `src/pages/[...lang].astro` |
-| Illustrated preloader character | `src/components/Dev.astro` |
+| Hero: dotted world map (built from Natural Earth at build time) | `src/components/HeroMap.astro`, `src/data/worldDots.ts` |
+| Portrait and its four looks (split, post-its, motion, dissolve) | `src/components/Portrait.astro` |
+| Career-timeline preloader | `src/components/Preloader.astro` |
 | Design tokens (colors, type, motion) | `src/styles/global.css` |
 
 ### Adding a language
@@ -34,5 +36,7 @@ Requires Node 22.22+.
 ## Notes
 
 - The preloader runs once per browser session and never with `prefers-reduced-motion`.
+- The portrait look is picked with the switcher in the hero and remembered per visitor. The default is the first entry of `LOOKS` in `src/data/profile.ts`.
+- `src/assets/portrait-cutout.png` is the portrait with its background removed (rembg, `u2net_human_seg`); `src/assets/portrait.jpg` is the uncut original used by the post-its look.
 - Fonts (Geist, Geist Mono) are self-hosted by Astro's font API at build time, preloaded, with metric-matched fallbacks.
 - The previous version of this site is kept at the `legacy-v1` tag.

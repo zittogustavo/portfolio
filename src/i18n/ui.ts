@@ -30,48 +30,57 @@ const en = {
   'nav.experience': 'Experience',
   'nav.about': 'About',
   'nav.contact': 'Contact',
-  'cta.talk': "Let's talk",
 
-  'preloader.status': 'Brewing coffee',
+  'preloader.status': 'Loading experience',
   'preloader.skip': 'Click or press any key to skip',
 
   'hero.role': 'Full-stack developer',
   'hero.intro':
-    '{years}+ years shipping software, from enterprise .NET releases to multi-tenant SaaS. Today I design and build products end to end: data model, back-office, front-end and deploy.',
+    '{years}+ years shipping software, from enterprise .NET releases to multi-tenant SaaS. Today at Webcargo and harneXia, building products end to end.',
   'hero.available': 'Available for new projects',
-  'hero.based': 'Based in Argentina',
+  'hero.based': 'Based in Buenos Aires',
   'hero.time': 'Local time',
-  'hero.scroll': 'Scroll',
+  'hero.photoAlt': 'Gustavo Zitto, black and white portrait',
 
-  'stack.label': 'Languages I work with',
+  'map.label': 'World map marking the cities I have lived and worked in: Buenos Aires, Málaga and Barcelona.',
+  'map.now': 'remote, now',
+
+  'look.label': 'Look',
+  'look.next': 'Next look: {name}',
+  'look.split': 'Split',
+  'look.notes': 'Post-its',
+  'look.motion': 'Motion',
+  'look.dissolve': 'Dissolve',
+  'note.1': 'Deploy on Friday?',
+  'note.2': 'Code review at 11',
+  'note.3': 'Refill coffee',
+  'note.4': 'Ship it.',
 
   'work.title': 'Selected work',
   'work.front': 'What you see',
   'work.back': 'Under the hood',
-  'work.backNote': 'Private, behind a login. Here is what it does.',
-  'work.visit': 'Visit site',
+  'work.backNote': 'Private, behind a login.',
 
   'exp.title': 'Experience',
   'exp.present': 'Present',
   'exp.languages': 'Languages',
 
   'about.title': 'About',
-  'about.photoAlt': 'Portrait of Gustavo Zitto smiling, black and white',
   'about.stat.years': 'years writing software',
   'about.stat.languages': 'languages in daily use',
   'about.stat.cities': "cities I've lived and coded in",
 
-  'contact.eyebrow': 'Got an idea?',
-  'contact.title': "Let's build it.",
+  'contact.title': 'Contact',
+  'contact.lead': 'Have a role or a product in mind? Write me.',
   'contact.cv': 'Download CV',
-  'contact.copy': 'Copy email',
-  'contact.copied': 'Copied!',
+  'contact.copy': 'Copy',
+  'contact.copied': 'Copied',
 
   'footer.built': 'Designed and built from scratch with Astro.',
   'footer.top': 'Back to top',
 
   '404.title': 'Page not found',
-  '404.text': 'The coffee is still hot, but this page does not exist.',
+  '404.text': 'This page is not on the map.',
   '404.back': 'Back home',
 };
 
@@ -97,48 +106,57 @@ const es: Record<UIKey, string> = {
   'nav.experience': 'Experiencia',
   'nav.about': 'Sobre mí',
   'nav.contact': 'Contacto',
-  'cta.talk': 'Hablemos',
 
-  'preloader.status': 'Preparando café',
+  'preloader.status': 'Cargando experiencia',
   'preloader.skip': 'Hacé clic o tocá una tecla para saltar',
 
   'hero.role': 'Desarrollador full-stack',
   'hero.intro':
-    'Más de {years} años construyendo software, desde releases .NET corporativos hasta SaaS multi-tenant. Hoy diseño y desarrollo productos de punta a punta: modelo de datos, back-office, front-end y deploy.',
+    'Más de {years} años construyendo software, desde releases .NET corporativos hasta SaaS multi-tenant. Hoy en Webcargo y harneXia, desarrollando productos de punta a punta.',
   'hero.available': 'Disponible para nuevos proyectos',
-  'hero.based': 'Desde Argentina',
+  'hero.based': 'Desde Buenos Aires',
   'hero.time': 'Hora local',
-  'hero.scroll': 'Scroll',
+  'hero.photoAlt': 'Gustavo Zitto, retrato en blanco y negro',
 
-  'stack.label': 'Lenguajes con los que trabajo',
+  'map.label': 'Mapa del mundo con las ciudades donde viví y trabajé: Buenos Aires, Málaga y Barcelona.',
+  'map.now': 'remoto, hoy',
+
+  'look.label': 'Estilo',
+  'look.next': 'Siguiente estilo: {name}',
+  'look.split': 'Dividido',
+  'look.notes': 'Post-its',
+  'look.motion': 'Movimiento',
+  'look.dissolve': 'Disuelto',
+  'note.1': '¿Deploy el viernes?',
+  'note.2': 'Code review a las 11',
+  'note.3': 'Recargar café',
+  'note.4': 'Ship it.',
 
   'work.title': 'Proyectos',
   'work.front': 'Lo que se ve',
   'work.back': 'Lo que no se ve',
-  'work.backNote': 'Privado, detrás de un login. Esto es lo que hace.',
-  'work.visit': 'Ver sitio',
+  'work.backNote': 'Privado, detrás de un login.',
 
   'exp.title': 'Experiencia',
   'exp.present': 'Actualidad',
   'exp.languages': 'Lenguajes',
 
   'about.title': 'Sobre mí',
-  'about.photoAlt': 'Retrato de Gustavo Zitto sonriendo, en blanco y negro',
   'about.stat.years': 'años escribiendo software',
   'about.stat.languages': 'lenguajes en uso diario',
   'about.stat.cities': 'ciudades donde viví y programé',
 
-  'contact.eyebrow': '¿Tenés una idea?',
-  'contact.title': 'Hagámosla realidad.',
+  'contact.title': 'Contacto',
+  'contact.lead': '¿Tenés un puesto o un producto en mente? Escribime.',
   'contact.cv': 'Descargar CV',
-  'contact.copy': 'Copiar email',
-  'contact.copied': '¡Copiado!',
+  'contact.copy': 'Copiar',
+  'contact.copied': 'Copiado',
 
   'footer.built': 'Diseñado y desarrollado desde cero con Astro.',
   'footer.top': 'Volver arriba',
 
   '404.title': 'Página no encontrada',
-  '404.text': 'El café sigue caliente, pero esta página no existe.',
+  '404.text': 'Esta página no está en el mapa.',
   '404.back': 'Volver al inicio',
 };
 

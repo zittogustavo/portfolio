@@ -11,55 +11,61 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 ---
 
-<section id="contact" class="contact container lazy-render" style="--intrinsic-height:700px" aria-labelledby="contact-title">
-  <p class="mono muted reveal">{t('contact.eyebrow')}</p>
-  <h2 id="contact-title" class="contact-title reveal">
-    <a href={`mailto:${profile.email}`}>
-      <span>{t('contact.title')}</span>
-      <Arrow class="contact-arrow" />
-    </a>
-  </h2>
+<section id="contact" class="contact lazy-render" style="--intrinsic-height:640px" aria-labelledby="contact-title">
+  <div class="container contact-inner">
+    <header class="section-head">
+      <p class="mono muted">(04)</p>
+      <h2 id="contact-title" class="section-title">{t('contact.title')}</h2>
+    </header>
 
-  <div class="contact-row">
-    <button type="button" class="email" data-email={profile.email} data-copied={t('contact.copied')}>
-      <span class="email-text">{profile.email}</span>
-      <span class="email-hint mono muted" aria-live="polite">{t('contact.copy')}</span>
-    </button>
+    <div class="contact-body">
+      <p class="lead reveal">{t('contact.lead')}</p>
 
-    <ul class="socials">
-      {
-        profile.socials.map((social) => (
-          <li>
-            <a href={social.href} target="_blank" rel="noopener me" class="link">
-              {social.label}
-              <span class="sr-only">({t('a11y.newTab')})</span>
-            </a>
-          </li>
-        ))
-      }
-      <li>
-        <a href={profile.cv} download="Gustavo-Zitto-CV.pdf" class="link">{t('contact.cv')}</a>
-      </li>
-    </ul>
+      <div class="email-row reveal">
+        <a class="email" href={`mailto:${profile.email}`}>
+          {profile.email}
+          <Arrow />
+        </a>
+        <button type="button" class="copy mono" data-email={profile.email} data-copied={t('contact.copied')}>
+          <span aria-live="polite">{t('contact.copy')}</span>
+        </button>
+      </div>
+
+      <ul class="links">
+        {
+          profile.socials.map((social) => (
+            <li>
+              <a href={social.href} target="_blank" rel="noopener me" class="link">
+                {social.label}
+                <span class="sr-only">({t('a11y.newTab')})</span>
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a href={profile.cv} download="Gustavo-Zitto-CV.pdf" class="link">{t('contact.cv')}</a>
+        </li>
+      </ul>
+    </div>
   </div>
+
+  <footer class="footer container mono">
+    <p>© {new Date().getFullYear()} {profile.name}</p>
+    <p class="muted">{t('footer.built')}</p>
+    <a href="#top" class="link">{t('footer.top')} ↑</a>
+  </footer>
 </section>
 
-<footer class="footer container">
-  <p>© {new Date().getFullYear()} {profile.name}</p>
-  <p class="muted">{t('footer.built')}</p>
-  <a href="#top" class="link">{t('footer.top')} ↑</a>
-</footer>
-
 <script>
-  const button = document.querySelector<HTMLButtonElement>('.email');
-  const hint = button?.querySelector<HTMLElement>('.email-hint');
-  if (button && hint) {
-    const initial = hint.textContent;
+  const button = document.querySelector<HTMLButtonElement>('.copy');
+  const label = button?.querySelector('span');
+  if (button && label) {
+    const initial = label.textContent;
     button.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(button.dataset.email ?? '');
-        hint.textContent = button.dataset.copied ?? '';
-        setTimeout(() => (hint.textContent = initial), 2000);
+        label.textContent = button.dataset.copied ?? '';
+        setTimeout(() => (label.textContent = initial), 2000);
       } catch {
         location.href = `mailto:${button.dataset.email}`;
       }
@@ -68,82 +74,75 @@ const t = useTranslations(lang);
 </script>
 
 <style>
+  /* Closing frame: same warm edge glow as the hero. */
   .contact {
+    position: relative;
+    box-shadow: var(--glow);
+  }
+
+  .contact-inner {
+    padding-block: clamp(5rem, 11vw, 9rem) clamp(4rem, 8vw, 6rem);
+  }
+
+  .contact-body {
     display: grid;
     gap: 1.5rem;
-    padding-block: clamp(6rem, 14vw, 12rem) clamp(3rem, 6vw, 5rem);
   }
 
-  .contact-title {
-    font-size: clamp(3rem, 11.5vw, 11rem);
-    line-height: 0.88;
-    letter-spacing: -0.06em;
-    text-transform: uppercase;
+  .lead {
+    color: var(--muted);
+    font-size: 1.0625rem;
   }
 
-  .contact-title a {
-    display: inline-flex;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 0 0.15em;
-    background: linear-gradient(var(--accent), var(--accent)) no-repeat 0 92% / 0 0.12em;
-    transition: background-size 0.7s var(--ease-out);
-  }
-
-  .contact-title a:hover,
-  .contact-title a:focus-visible {
-    background-size: 100% 0.12em;
-  }
-
-  .contact-title :global(.contact-arrow) {
-    width: 0.7em;
-    height: 0.7em;
-    color: var(--accent-ink);
-  }
-
-  .contact-title a:hover :global(.contact-arrow) {
-    transform: rotate(45deg);
-  }
-
-  .contact-row {
+  .email-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1.5rem 3rem;
-    margin-top: clamp(1.5rem, 4vw, 3rem);
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--line);
+    align-items: center;
+    gap: 0.75rem 1.25rem;
   }
 
   .email {
-    display: grid;
-    justify-items: start;
-    gap: 0.25rem;
-    text-align: left;
-  }
-
-  .email-text {
-    font-size: clamp(1.25rem, 3vw, 2rem);
-    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: clamp(1.375rem, 3.2vw, 2.25rem);
     letter-spacing: -0.03em;
     overflow-wrap: anywhere;
+    transition: color 0.2s;
   }
 
-  .email:hover .email-text {
+  .email:hover {
     color: var(--accent-ink);
   }
 
-  .socials {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.75rem;
-    font-weight: 500;
+  .email:hover :global(.arrow) {
+    transform: translate(3px, -3px);
   }
 
-  .socials a {
+  .copy {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    transition:
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  .copy:hover {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .links a {
     display: inline-block;
-    padding-block: 0.4rem;
+    padding-block: 0.35rem;
   }
 
   .footer {
@@ -151,8 +150,14 @@ const t = useTranslations(lang);
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 0.5rem 2rem;
-    padding-block: 2rem;
+    padding-block: 1.75rem;
     border-top: 1px solid var(--line);
-    font-size: 0.875rem;
+    font-size: 0.6875rem;
+  }
+
+  @media (min-width: 52rem) {
+    .contact-body {
+      margin-left: 12rem;
+    }
   }
 </style>
