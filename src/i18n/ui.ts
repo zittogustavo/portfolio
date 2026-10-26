@@ -36,7 +36,7 @@ const en = {
 
   'hero.role': 'Full-stack developer',
   'hero.intro':
-    '{years}+ years shipping software, from enterprise .NET releases to multi-tenant SaaS. Today at Webcargo and harneXia, building products end to end.',
+    '{years}+ years shipping software, from enterprise .NET releases to multi-tenant SaaS. Today at Freightos and harneXia, building products end to end.',
   'hero.available': 'Available for new projects',
   'hero.based': 'Based in Buenos Aires',
   'hero.time': 'Local time',
@@ -63,7 +63,7 @@ const en = {
 
   'exp.title': 'Experience',
   'exp.present': 'Present',
-  'exp.languages': 'Languages',
+  'exp.languages': 'Languages I use today',
 
   'about.title': 'About',
   'about.stat.years': 'years writing software',
@@ -76,7 +76,6 @@ const en = {
   'contact.copy': 'Copy',
   'contact.copied': 'Copied',
 
-  'footer.built': 'Designed and built from scratch with Astro.',
   'footer.top': 'Back to top',
 
   '404.title': 'Page not found',
@@ -112,7 +111,7 @@ const es: Record<UIKey, string> = {
 
   'hero.role': 'Desarrollador full-stack',
   'hero.intro':
-    'Más de {years} años construyendo software, desde releases .NET corporativos hasta SaaS multi-tenant. Hoy en Webcargo y harneXia, desarrollando productos de punta a punta.',
+    'Más de {years} años construyendo software, desde releases .NET corporativos hasta SaaS multi-tenant. Hoy en Freightos y harneXia, desarrollando productos de punta a punta.',
   'hero.available': 'Disponible para nuevos proyectos',
   'hero.based': 'Desde Buenos Aires',
   'hero.time': 'Hora local',
@@ -139,7 +138,7 @@ const es: Record<UIKey, string> = {
 
   'exp.title': 'Experiencia',
   'exp.present': 'Actualidad',
-  'exp.languages': 'Lenguajes',
+  'exp.languages': 'Lenguajes que uso hoy',
 
   'about.title': 'Sobre mí',
   'about.stat.years': 'años escribiendo software',
@@ -152,7 +151,6 @@ const es: Record<UIKey, string> = {
   'contact.copy': 'Copiar',
   'contact.copied': 'Copiado',
 
-  'footer.built': 'Diseñado y desarrollado desde cero con Astro.',
   'footer.top': 'Volver arriba',
 
   '404.title': 'Página no encontrada',

@@ -1,5 +1,5 @@
 ---
-import { CAREER_START_YEAR, experience } from '@/data/profile';
+import { CAREER_START_YEAR, visibleExperience } from '@/data/profile';
 import { localize, useTranslations, type Lang } from '@/i18n/ui';
 
 interface Props {
@@ -12,7 +12,7 @@ const endYear = new Date().getFullYear();
 const span = endYear - CAREER_START_YEAR;
 
 // The career as a timeline: one milestone per job, oldest first.
-const milestones = [...experience]
+const milestones = [...visibleExperience]
   .sort((a, b) => a.start.localeCompare(b.start))
   .map((job) => ({
     year: Number(job.start.slice(0, 4)),

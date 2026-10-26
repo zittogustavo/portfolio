@@ -1,6 +1,6 @@
 ---
 import Arrow from './Arrow.astro';
-import { experience } from '@/data/profile';
+import { languagesInUse, visibleExperience } from '@/data/profile';
 import { formatMonth, localize, useTranslations, type Lang } from '@/i18n/ui';
 
 interface Props {
@@ -13,13 +13,20 @@ const t = useTranslations(lang);
 
 <section id="experience" class="section container lazy-render" style="--intrinsic-height:2400px" aria-labelledby="experience-title">
   <header class="section-head">
-    <p class="mono muted">(02)</p>
+    <p class="mono muted">(01)</p>
     <h2 id="experience-title" class="section-title">{t('exp.title')}</h2>
   </header>
 
+  <div class="languages">
+    <p class="mono muted">{t('exp.languages')}</p>
+    <ul class="chips">
+      {languagesInUse.map((name) => <li class="chip">{name}</li>)}
+    </ul>
+  </div>
+
   <ol class="jobs">
     {
-      experience.map((job) => {
+      visibleExperience.map((job) => {
         const company = localize(job.company, lang);
         return (
           <li class="job reveal">
@@ -68,6 +75,12 @@ const t = useTranslations(lang);
 </section>
 
 <style>
+  .languages {
+    display: grid;
+    gap: 0.6rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+  }
+
   .jobs {
     border-top: 1px solid var(--line);
   }
@@ -114,6 +127,11 @@ const t = useTranslations(lang);
   }
 
   @media (min-width: 52rem) {
+    .languages {
+      grid-template-columns: 12rem minmax(0, 1fr);
+      align-items: center;
+    }
+
     .job {
       grid-template-columns: 12rem minmax(0, 1fr);
     }

@@ -45,12 +45,16 @@ export type Experience = {
   tags: string[];
   /** Label the tags as "languages" (they list languages rather than tech). */
   tagsAreLanguages?: boolean;
+  /** Kept in the data but not shown anywhere (timeline, preloader). */
+  hidden?: boolean;
 };
 
 export const experience: Experience[] = [
   {
     company: 'Freelance · harneXia',
     short: 'harneXia',
+    // Hidden for now; flip to false to bring it back.
+    hidden: true,
     role: { en: 'Full-stack Developer', es: 'Desarrollador Full-stack' },
     // TODO(gustavo): confirm start date.
     start: '2026-04',
@@ -71,8 +75,8 @@ export const experience: Experience[] = [
     tagsAreLanguages: true,
   },
   {
-    company: 'Webcargo by Freightos',
-    url: 'https://www.webcargo.co/',
+    company: 'Freightos',
+    url: 'https://www.freightos.com/',
     role: { en: 'Senior Software Development Engineer', es: 'Senior Software Development Engineer' },
     start: '2021-11',
     place: { en: 'Barcelona · Remote', es: 'Barcelona · Remoto' },
@@ -154,6 +158,9 @@ export const experience: Experience[] = [
   },
 ];
 
+/** The jobs actually shown on the site. */
+export const visibleExperience = experience.filter((job) => !job.hidden);
+
 export type Project = {
   name: string;
   url: string;
@@ -221,61 +228,8 @@ export const projects: Project[] = [
     stack: ['Next.js', 'React', 'TypeScript', 'Supabase', 'PostgreSQL', 'Vite PWA'],
   },
   {
-    name: 'harneXia News',
-    url: 'https://news.harnexia.com',
-    year: 2026,
-    summary: {
-      en: 'A personalised AI newsletter: each reader picks a profile, frequency and reading time, and gets their own edition.',
-      es: 'Un newsletter de IA personalizado: cada lector elige perfil, frecuencia y tiempo de lectura, y recibe su propia edición.',
-    },
-    front: {
-      en: 'Signup configurator and a login-free reading portal where readers rate every item, tuning what their next edition brings.',
-      es: 'Configurador de suscripción y un portal de lectura sin login donde cada lector puntúa las notas y así ajusta su próxima edición.',
-    },
-    back: {
-      en: [
-        'Job pipeline on BullMQ: hourly scraping of RSS and HTML sources, AI summaries with per-profile relevance scores, and digests sent at each reader’s local time.',
-        'AI provider fallback chain (Gemini → Groq → OpenRouter), Resend email with bounce webhooks, and ElevenLabs audio episodes stored on Cloudflare R2.',
-        'Next.js back-office (installable PWA) for subscribers, sources, article and social-post approval, AI usage and stats. Promo videos rendered with Remotion.',
-      ],
-      es: [
-        'Pipeline de jobs en BullMQ: scraping horario de fuentes RSS y HTML, resúmenes con IA y puntaje de relevancia por perfil, y envíos a la hora local de cada lector.',
-        'Cadena de proveedores de IA con fallback (Gemini → Groq → OpenRouter), emails con Resend y webhooks de rebotes, y episodios de audio con ElevenLabs guardados en Cloudflare R2.',
-        'Back-office en Next.js (PWA instalable) para suscriptores, fuentes, aprobación de artículos y posteos en redes, uso de IA y estadísticas. Videos promocionales con Remotion.',
-      ],
-    },
-    stack: ['NestJS', 'MongoDB', 'Redis', 'Next.js', 'Astro', 'Remotion'],
-  },
-  {
-    name: 'harneXia',
-    url: 'https://harnexia.com',
-    year: 2026,
-    summary: {
-      en: 'Website for harneXia, an IT and AI consultancy working from Buenos Aires and Barcelona.',
-      es: 'Sitio web de harneXia, una consultora de IT e IA que trabaja desde Buenos Aires y Barcelona.',
-    },
-    front: {
-      en: 'Bilingual site with translated routes, light and dark themes, a dotted globe and network canvas drawn from build-time geodata, and a blog with audio episodes and RSS.',
-      es: 'Sitio bilingüe con rutas traducidas, tema claro y oscuro, un globo de puntos y un canvas de red generados con datos geográficos en build, y un blog con episodios de audio y RSS.',
-    },
-    back: {
-      en: [
-        'Strict hash-based Content Security Policy with Trusted Types, computed at build time so it never drifts.',
-        'SEO and AI-search groundwork: JSON-LD, an hreflang sitemap, llms.txt and a post-build check that fails on regressions.',
-        'Blog posts pulled from the newsletter API at build time, cookieless self-hosted analytics, and a Docker + nginx deploy with scheduled rebuilds.',
-      ],
-      es: [
-        'Content Security Policy estricta por hashes con Trusted Types, calculada en build para que nunca quede desfasada.',
-        'Base de SEO y búsqueda con IA: JSON-LD, sitemap con hreflang, llms.txt y un chequeo post-build que falla ante regresiones.',
-        'Artículos del blog traídos de la API del newsletter en build, analítica propia sin cookies y deploy con Docker + nginx con rebuilds programados.',
-      ],
-    },
-    stack: ['Astro', 'TypeScript', 'Tailwind', 'd3-geo', 'Docker'],
-  },
-  {
     name: 'Pura Patita',
     url: 'https://purapatita.com.ar',
-    extraLinks: [{ label: 'sistema.purapatita.com.ar', url: 'https://sistema.purapatita.com.ar' }],
     year: 2025,
     summary: {
       en: 'Online store for dog food, with a custom food calculator that recommends the right product.',
@@ -290,12 +244,12 @@ export const projects: Project[] = [
         'Custom wp-admin module with usage stats and a product-by-portion mapping.',
         'Every calculation is stored via AJAX in a custom table, turning the tool into a source of customer insights.',
         // TODO(gustavo): describe what the internal system does (its code isn't on this machine).
-        'Internal management system for the business, a private Next.js app behind a login.',
+        'Internal management system for the business (sistema.purapatita.com.ar), a private Next.js app behind a login.',
       ],
       es: [
         'Módulo propio en wp-admin con estadísticas de uso y el mapeo de productos por porción.',
         'Cada cálculo se guarda vía AJAX en una tabla propia, convirtiendo la herramienta en una fuente de datos de clientes.',
-        'Sistema interno de gestión del negocio, una app privada en Next.js detrás de un login.',
+        'Sistema interno de gestión del negocio (sistema.purapatita.com.ar), una app privada en Next.js detrás de un login.',
       ],
     },
     stack: ['WordPress', 'WooCommerce', 'PHP', 'Next.js', 'MySQL'],
@@ -306,11 +260,11 @@ export const about: Localized<string[]> = {
   en: [
     'I wrote my first production code in 2009 at Accenture Argentina, at 20. Over eight years I went from .NET developer to Scrum Master, Team Lead and Defect Lead of releases with hundreds of bugs and a hundred people across the globe.',
     'Then I went back to what I enjoy most: building. PHP and JavaScript with whatever framework the job needed, for a public prosecutor’s office, an events startup and a freight-tech scale-up, living in Buenos Aires, Málaga and Barcelona along the way.',
-    'Today I’m back home in Argentina: still at Webcargo, remotely, and building products end to end with harneXia on a modern TypeScript stack. Just as curious about new tech as on day one. If you have a role or an idea where I could fit, let’s talk.',
+    'Today I’m back home in Argentina: still at Freightos, remotely, and building products end to end with harneXia on a modern TypeScript stack. Just as curious about new tech as on day one. If you have a role or an idea where I could fit, let’s talk.',
   ],
   es: [
     'Escribí mi primer código productivo en 2009 en Accenture Argentina, con 20 años. En ocho años pasé de desarrollador .NET a Scrum Master, Team Lead y Defect Lead de releases con cientos de bugs y un centenar de personas en todo el mundo.',
     'Después volví a lo que más disfruto: construir. PHP y JavaScript con el framework que hiciera falta, para un ministerio público, una startup de eventos y una scale-up de logística, viviendo en Buenos Aires, Málaga y Barcelona en el camino.',
-    'Hoy estoy de vuelta en Argentina: sigo en Webcargo, en remoto, y construyo productos de punta a punta con harneXia sobre un stack moderno en TypeScript. Con la misma curiosidad por la tecnología que el primer día. Si tenés un puesto o una idea donde pueda sumar, hablemos.',
+    'Hoy estoy de vuelta en Argentina: sigo en Freightos, en remoto, y construyo productos de punta a punta con harneXia sobre un stack moderno en TypeScript. Con la misma curiosidad por la tecnología que el primer día. Si tenés un puesto o una idea donde pueda sumar, hablemos.',
   ],
 };
