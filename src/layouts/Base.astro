@@ -25,6 +25,7 @@ const personSchema = {
   name: profile.name,
   jobTitle: t('hero.role'),
   email: `mailto:${profile.email}`,
+  telephone: profile.phone.tel,
   url: new URL(localePath(defaultLang), site).href,
   image: new URL('/og.png', site).href,
   address: { '@type': 'PostalAddress', addressCountry: 'AR' },

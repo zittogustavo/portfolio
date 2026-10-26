@@ -31,6 +31,8 @@ const t = useTranslations(lang);
         </button>
       </div>
 
+      <a class="phone link" href={`tel:${profile.phone.tel}`}>{profile.phone.display}</a>
+
       <ul class="links">
         {
           profile.socials.map((social) => (
@@ -131,6 +133,12 @@ const t = useTranslations(lang);
   .copy:hover {
     border-color: var(--fg);
     color: var(--fg);
+  }
+
+  .phone {
+    justify-self: start;
+    font-size: 1.0625rem;
+    font-variant-numeric: tabular-nums;
   }
 
   .links {

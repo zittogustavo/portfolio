@@ -8,6 +8,7 @@ export const profile = {
   firstName: 'Gustavo',
   lastName: 'Zitto',
   email: 'zittogustavo@gmail.com',
+  phone: { display: '+54 9 11 5143-4802', tel: '+5491151434802' },
   timeZone: 'America/Argentina/Buenos_Aires',
   cv: '/gustavo-zitto-cv.pdf',
   socials: [
