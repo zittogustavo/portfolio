@@ -1,0 +1,78 @@
+---
+import { languagesInUse } from '@/data/profile';
+import { useTranslations, type Lang } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const t = useTranslations(Astro.props.lang);
+---
+
+<div class="marquee">
+  <ul class="sr-only" aria-label={t("stack.label")}>
+    {languagesInUse.map((name) => <li>{name}</li>)}
+  </ul>
+  <div class="marquee-track" aria-hidden="true">
+    {
+      [0, 1].map(() => (
+        <div class="marquee-group">
+          {languagesInUse.map((name) => (
+            <span class="marquee-item">{name}</span>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    padding-block: 1.25rem;
+    border-block: 1px solid var(--line);
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  .marquee-group {
+    display: flex;
+  }
+
+  .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    padding-right: clamp(1.25rem, 3vw, 2.5rem);
+    font-size: clamp(1.75rem, 4.5vw, 3.5rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Four-point star separator, drawn in CSS to keep the DOM small. */
+  .marquee-item::after {
+    content: '';
+    width: 0.5em;
+    height: 0.5em;
+    background: var(--accent);
+    clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>

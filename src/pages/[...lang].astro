@@ -1,0 +1,37 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '@/layouts/Base.astro';
+import Preloader from '@/components/Preloader.astro';
+import Header from '@/components/Header.astro';
+import Hero from '@/components/Hero.astro';
+import Marquee from '@/components/Marquee.astro';
+import Work from '@/components/Work.astro';
+import Experience from '@/components/Experience.astro';
+import About from '@/components/About.astro';
+import Contact from '@/components/Contact.astro';
+import { yearsOfExperience } from '@/data/profile';
+import { defaultLang, langs, useTranslations, type Lang } from '@/i18n/ui';
+
+// One template for every language: `/` (English) and `/es/`.
+export const getStaticPaths = (() =>
+  langs.map((lang) => ({
+    params: { lang: lang === defaultLang ? undefined : lang },
+    props: { lang },
+  }))) satisfies GetStaticPaths;
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+---
+
+<Base lang={lang} title={t('meta.title')} description={t('meta.description', { years: yearsOfExperience() })}>
+  <Preloader lang={lang} slot="before" />
+  <Header lang={lang} />
+  <main id="main">
+    <Hero lang={lang} />
+    <Marquee lang={lang} />
+    <Work lang={lang} />
+    <Experience lang={lang} />
+    <About lang={lang} />
+  </main>
+  <Contact lang={lang} />
+</Base>

@@ -1,0 +1,226 @@
+---
+import Arrow from './Arrow.astro';
+import { projects } from '@/data/profile';
+import { useTranslations, type Lang } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const pad = (n: number) => String(n).padStart(2, '0');
+const host = (url: string) => new URL(url).host.replace(/^www\./, '');
+---
+
+<section id="work" class="section container lazy-render" style="--intrinsic-height:2600px" aria-labelledby="work-title">
+  <div class="section-head">
+    <h2 id="work-title" class="section-title reveal-x">{t('work.title')}</h2>
+    <span class="mono muted">({pad(projects.length)})</span>
+  </div>
+
+  <ol class="projects">
+    {
+      projects.map((project, i) => (
+        <li class="project reveal">
+          <a
+            class="project-head"
+            href={project.url}
+            target="_blank"
+            rel="noopener"
+            aria-label={`${project.name}, ${t('work.visit')} (${t('a11y.newTab')})`}
+          >
+            <span class="mono muted">{pad(i + 1)}</span>
+            <h3 class="project-name">{project.name}</h3>
+            <span class="project-year mono muted">{project.year}</span>
+            <span class="project-go">
+              <Arrow />
+            </span>
+          </a>
+
+          <p class="project-summary">{project.summary[lang]}</p>
+
+          <div class="project-body">
+            <div class="project-col">
+              <h4 class="mono">{t('work.front')}</h4>
+              <p>{project.front[lang]}</p>
+              <a class="visit link" href={project.url} target="_blank" rel="noopener">
+                {host(project.url)}
+                <Arrow />
+                <span class="sr-only">({t('a11y.newTab')})</span>
+              </a>
+            </div>
+            <div class="project-col">
+              <h4 class="mono">
+                <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+                  <path d="M4 7V5a4 4 0 1 1 8 0v2h1v8H3V7h1Zm2 0h4V5a2 2 0 1 0-4 0v2Z" fill="currentColor" />
+                </svg>
+                {t('work.back')}
+              </h4>
+              <p class="note muted">{t('work.backNote')}</p>
+              <ul class="back-list">
+                {project.back[lang].map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <ul class="chips">
+            {project.stack.map((tech) => (
+              <li class="chip">{tech}</li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .projects {
+    display: grid;
+  }
+
+  .project {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .project:first-child {
+    padding-top: 0;
+  }
+
+  .project-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 2rem);
+  }
+
+  .project-name {
+    font-size: clamp(2.5rem, 8vw, 6.5rem);
+    letter-spacing: -0.055em;
+    line-height: 0.9;
+    text-transform: uppercase;
+    transition:
+      transform 0.5s var(--ease-out),
+      color 0.3s;
+  }
+
+  .project-go {
+    display: grid;
+    place-items: center;
+    width: clamp(2.75rem, 5vw, 4rem);
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    font-size: 1.25rem;
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      border-color 0.3s;
+  }
+
+  .project-head:hover .project-name,
+  .project-head:focus-visible .project-name {
+    transform: translateX(0.5rem);
+    color: var(--accent-ink);
+  }
+
+  .project-head:hover .project-go,
+  .project-head:focus-visible .project-go {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .project-head:hover .project-go :global(.arrow) {
+    transform: rotate(45deg);
+  }
+
+  .project-summary {
+    max-width: 48rem;
+    font-size: clamp(1.125rem, 2vw, 1.5rem);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+  }
+
+  .project-body {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .project-col {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-elev);
+  }
+
+  .project-col h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+  }
+
+  .note {
+    font-size: 0.875rem;
+  }
+
+  .back-list {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .back-list li {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+
+  .back-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 0.45rem;
+    height: 1.5px;
+    background: var(--accent);
+  }
+
+  .visit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    justify-self: start;
+    margin-top: 0.25rem;
+    font-weight: 500;
+  }
+
+  .visit:hover :global(.arrow) {
+    transform: rotate(45deg);
+  }
+
+  @media (min-width: 52rem) {
+    .project {
+      grid-template-columns: 1fr 1fr;
+      column-gap: clamp(2rem, 4vw, 4rem);
+    }
+
+    .project-head,
+    .project-body,
+    .chips {
+      grid-column: 1 / -1;
+    }
+
+    .project-body {
+      grid-template-columns: 1fr 1.4fr;
+    }
+  }
+</style>

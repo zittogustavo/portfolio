@@ -1,0 +1,209 @@
+---
+import { useTranslations, type Lang } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const t = useTranslations(Astro.props.lang);
+---
+
+<!--
+  Shown once per session. The inline script in <head> adds `html.pl` before first paint
+  (never with reduced motion or without JS), so the page below is always fully rendered.
+  The character is the hero's own SVG, lifted above this overlay and parked on `.pl-stage`,
+  so there is a single illustration in the DOM and it lands exactly where it lives.
+-->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="pl-stage"></div>
+  <p class="pl-status mono">{t('preloader.status')}<span class="pl-dots"></span></p>
+  <p class="pl-skip mono">{t('preloader.skip')}</p>
+  <p class="pl-count"><span class="pl-num">0</span><span class="pl-pct">%</span></p>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const preloader = document.getElementById('preloader');
+
+  if (preloader && root.classList.contains('pl')) {
+    const num = preloader.querySelector<HTMLElement>('.pl-num')!;
+    const slot = preloader.querySelector<HTMLElement>('.pl-stage')!;
+    const dev = document.querySelector<SVGSVGElement>('.hero-dev');
+
+    if (dev) {
+      const a = dev.getBoundingClientRect();
+      const b = slot.getBoundingClientRect();
+      dev.style.transformOrigin = '0 0';
+      dev.style.transform = `translate(${b.left - a.left}px, ${b.top - a.top}px) scale(${b.width / a.width})`;
+      root.classList.add('pl-ready');
+    }
+
+    const DURATION = 1400;
+    // Ease that stalls a bit in the middle, like a real loader.
+    const ease = (p: number) => (p < 0.5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2) * 0.7 + p * 0.3;
+    const start = performance.now();
+    let skipped = false;
+
+    const skip = () => (skipped = true);
+    addEventListener('pointerdown', skip, { once: true });
+    addEventListener('keydown', skip, { once: true });
+
+    const tick = (now: number) => {
+      const p = skipped ? 1 : Math.min((now - start) / DURATION, 1);
+      num.textContent = String(Math.round(ease(p) * 100));
+      if (p < 1) requestAnimationFrame(tick);
+      else finish();
+    };
+    requestAnimationFrame(tick);
+
+    function finish() {
+      removeEventListener('pointerdown', skip);
+      removeEventListener('keydown', skip);
+      try {
+        sessionStorage.setItem('pl', '1');
+      } catch {}
+
+      root.classList.add('pl-out');
+
+      // Fly the character home: animate its parking transform back to none.
+      const DURATION_OUT = 800;
+      if (dev) {
+        dev.animate([{ transform: dev.style.transform }, { transform: 'none' }], {
+          duration: DURATION_OUT,
+          easing: 'cubic-bezier(0.76, 0, 0.24, 1)',
+        });
+        dev.style.transform = '';
+        dev.style.transformOrigin = '';
+      }
+
+      setTimeout(() => {
+        root.classList.remove('pl', 'pl-ready', 'pl-out');
+        preloader!.remove();
+      }, DURATION_OUT + 50);
+    }
+  }
+</script>
+
+<style>
+  .preloader {
+    display: none;
+  }
+
+  :global(html.pl) .preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    grid-template: 'status skip' auto '. .' 1fr 'stage stage' auto '. .' 1fr 'count count' auto / 1fr auto;
+    padding: var(--gutter);
+    background: var(--bg);
+    cursor: progress;
+    contain: layout paint style;
+    transition: background-color 0.7s var(--ease-in-out) 0.25s;
+    /* Failsafe: never keep the page covered if the script dies. */
+    animation: pl-failsafe 0s 6s forwards;
+  }
+
+  :global(html.pl-out) .preloader {
+    background-color: transparent;
+    pointer-events: none;
+  }
+
+  .pl-stage {
+    grid-area: stage;
+    justify-self: center;
+    width: min(72vw, 21rem);
+    aspect-ratio: 400 / 410;
+  }
+
+  /* No scrolling under the overlay (released by the failsafe too). */
+  :global(html.pl) {
+    overflow: hidden;
+    animation: pl-unlock 0s 6s forwards;
+  }
+
+  @keyframes pl-unlock {
+    to {
+      overflow: visible;
+    }
+  }
+
+  .pl-status {
+    grid-area: status;
+  }
+
+  .pl-skip {
+    grid-area: skip;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .pl-dots::after {
+    content: '';
+    animation: pl-dots 1.2s steps(4) infinite;
+  }
+
+  .pl-count {
+    grid-area: count;
+    justify-self: end;
+    display: flex;
+    align-items: flex-start;
+    font-size: clamp(6rem, 24vw, 17rem);
+    font-weight: 300;
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Fixed width: the counter grows without shifting the % sign. */
+  .pl-num {
+    min-width: 3ch;
+    text-align: right;
+  }
+
+  .pl-pct {
+    font-size: 0.25em;
+    margin-top: 0.15em;
+    letter-spacing: 0;
+  }
+
+  .pl-status,
+  .pl-skip,
+  .pl-count {
+    transition:
+      opacity 0.35s ease,
+      transform 0.5s var(--ease-in-out);
+  }
+
+  :global(html.pl-out) :is(.pl-status, .pl-skip, .pl-count) {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+
+  @keyframes pl-dots {
+    0% {
+      content: '';
+    }
+    25% {
+      content: '.';
+    }
+    50% {
+      content: '..';
+    }
+    75% {
+      content: '...';
+    }
+  }
+
+  @keyframes pl-failsafe {
+    to {
+      visibility: hidden;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .pl-skip {
+      display: none;
+    }
+  }
+</style>

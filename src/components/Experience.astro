@@ -1,0 +1,158 @@
+---
+import Arrow from './Arrow.astro';
+import { experience } from '@/data/profile';
+import { formatMonth, localize, useTranslations, type Lang } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="experience" class="section container lazy-render" style="--intrinsic-height:2800px" aria-labelledby="experience-title">
+  <div class="section-head">
+    <h2 id="experience-title" class="section-title reveal-x">{t('exp.title')}</h2>
+    <span class="mono muted">2009 — {new Date().getFullYear()}</span>
+  </div>
+
+  <ol class="jobs">
+    {
+      experience.map((job) => {
+        const company = localize(job.company, lang);
+        return (
+          <li class:list={['job reveal', { current: job.current }]}>
+            <div class="job-when mono">
+              <p>
+                <time datetime={job.start}>{formatMonth(job.start, lang)}</time>
+                {' — '}
+                {job.end ? <time datetime={job.end}>{formatMonth(job.end, lang)}</time> : t('exp.present')}
+              </p>
+              <p class="muted">{job.place[lang]}</p>
+            </div>
+
+            <div class="job-main">
+              <h3 class="job-role">{job.role[lang]}</h3>
+              <p class="job-company">
+                {job.url ? (
+                  <a href={job.url} target="_blank" rel="noopener" class="link">
+                    {company}
+                    <Arrow />
+                    <span class="sr-only">({t('a11y.newTab')})</span>
+                  </a>
+                ) : (
+                  company
+                )}
+              </p>
+              <ul class="job-points">
+                {job.highlights[lang].map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+              {job.current && <p class="mono muted job-tags-label">{t('exp.languages')}</p>}
+              <ul class="chips">
+                {job.tags.map((tag) => (
+                  <li class="chip">{tag}</li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ol>
+</section>
+
+<style>
+  .jobs {
+    display: grid;
+  }
+
+  .job {
+    display: grid;
+    gap: 1rem;
+    padding-block: clamp(1.75rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .job:first-child {
+    padding-top: 0;
+  }
+
+  .job-when {
+    display: grid;
+    gap: 0.2rem;
+    align-content: start;
+  }
+
+  .current .job-when p:first-child::before {
+    content: '';
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+    vertical-align: 0.05em;
+  }
+
+  .job-main {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 52rem;
+  }
+
+  .job-role {
+    font-size: clamp(1.5rem, 3.2vw, 2.5rem);
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  .job-company a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .job-company {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .job-points {
+    display: grid;
+    gap: 0.5rem;
+    margin-block: 0.5rem;
+  }
+
+  .job-points li {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+
+  .job-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 0.45rem;
+    height: 1.5px;
+    background: var(--muted);
+  }
+
+  .job-tags-label {
+    margin-bottom: -0.25rem;
+  }
+
+  .current .chip {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+
+  @media (min-width: 52rem) {
+    .job {
+      grid-template-columns: minmax(14rem, 1fr) 2.5fr;
+      column-gap: 3rem;
+    }
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+import Base from '@/layouts/Base.astro';
+import Dev from '@/components/Dev.astro';
+import { localePath, useTranslations } from '@/i18n/ui';
+
+// Static hosts serve a single 404, so it speaks both languages.
+const en = useTranslations('en');
+const es = useTranslations('es');
+---
+
+<Base lang="en" title={`404 — ${en('404.title')}`} description={en('404.text')} path="404" noindex>
+  <main id="main" class="not-found container">
+    <div class="nf-dev"><Dev /></div>
+    <h1>404</h1>
+    <p>{en('404.text')}</p>
+    <p lang="es" class="muted">{es('404.text')}</p>
+    <p class="nf-links">
+      <a href={localePath('en')} class="link">{en('404.back')}</a>
+      <a href={localePath('es')} class="link" lang="es">{es('404.back')}</a>
+    </p>
+  </main>
+</Base>
+
+<style>
+  .not-found {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1rem;
+    min-height: 100svh;
+    text-align: center;
+  }
+
+  .nf-dev {
+    width: min(60vw, 16rem);
+  }
+
+  h1 {
+    font-size: clamp(5rem, 20vw, 12rem);
+    letter-spacing: -0.07em;
+  }
+
+  .nf-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    font-weight: 500;
+  }
+</style>

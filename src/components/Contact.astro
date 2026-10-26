@@ -1,0 +1,158 @@
+---
+import Arrow from './Arrow.astro';
+import { profile } from '@/data/profile';
+import { useTranslations, type Lang } from '@/i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section id="contact" class="contact container lazy-render" style="--intrinsic-height:700px" aria-labelledby="contact-title">
+  <p class="mono muted reveal">{t('contact.eyebrow')}</p>
+  <h2 id="contact-title" class="contact-title reveal">
+    <a href={`mailto:${profile.email}`}>
+      <span>{t('contact.title')}</span>
+      <Arrow class="contact-arrow" />
+    </a>
+  </h2>
+
+  <div class="contact-row">
+    <button type="button" class="email" data-email={profile.email} data-copied={t('contact.copied')}>
+      <span class="email-text">{profile.email}</span>
+      <span class="email-hint mono muted" aria-live="polite">{t('contact.copy')}</span>
+    </button>
+
+    <ul class="socials">
+      {
+        profile.socials.map((social) => (
+          <li>
+            <a href={social.href} target="_blank" rel="noopener me" class="link">
+              {social.label}
+              <span class="sr-only">({t('a11y.newTab')})</span>
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href={profile.cv} download="Gustavo-Zitto-CV.pdf" class="link">{t('contact.cv')}</a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<footer class="footer container">
+  <p>© {new Date().getFullYear()} {profile.name}</p>
+  <p class="muted">{t('footer.built')}</p>
+  <a href="#top" class="link">{t('footer.top')} ↑</a>
+</footer>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.email');
+  const hint = button?.querySelector<HTMLElement>('.email-hint');
+  if (button && hint) {
+    const initial = hint.textContent;
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.email ?? '');
+        hint.textContent = button.dataset.copied ?? '';
+        setTimeout(() => (hint.textContent = initial), 2000);
+      } catch {
+        location.href = `mailto:${button.dataset.email}`;
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact {
+    display: grid;
+    gap: 1.5rem;
+    padding-block: clamp(6rem, 14vw, 12rem) clamp(3rem, 6vw, 5rem);
+  }
+
+  .contact-title {
+    font-size: clamp(3rem, 11.5vw, 11rem);
+    line-height: 0.88;
+    letter-spacing: -0.06em;
+    text-transform: uppercase;
+  }
+
+  .contact-title a {
+    display: inline-flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0 0.15em;
+    background: linear-gradient(var(--accent), var(--accent)) no-repeat 0 92% / 0 0.12em;
+    transition: background-size 0.7s var(--ease-out);
+  }
+
+  .contact-title a:hover,
+  .contact-title a:focus-visible {
+    background-size: 100% 0.12em;
+  }
+
+  .contact-title :global(.contact-arrow) {
+    width: 0.7em;
+    height: 0.7em;
+    color: var(--accent-ink);
+  }
+
+  .contact-title a:hover :global(.contact-arrow) {
+    transform: rotate(45deg);
+  }
+
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem 3rem;
+    margin-top: clamp(1.5rem, 4vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .email {
+    display: grid;
+    justify-items: start;
+    gap: 0.25rem;
+    text-align: left;
+  }
+
+  .email-text {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    overflow-wrap: anywhere;
+  }
+
+  .email:hover .email-text {
+    color: var(--accent-ink);
+  }
+
+  .socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.75rem;
+    font-weight: 500;
+  }
+
+  .socials a {
+    display: inline-block;
+    padding-block: 0.4rem;
+  }
+
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: 2rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.875rem;
+  }
+</style>
