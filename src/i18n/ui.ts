@@ -36,7 +36,7 @@ const en = {
 
   'hero.role': 'Full-stack developer',
   'hero.intro':
-    '{years}+ years shipping software, from enterprise .NET releases to multi-tenant SaaS. Today at Freightos and harneXia, building products end to end.',
+    '{years}+ years shipping software, from enterprise .NET releases to multi-tenant SaaS. Today at Freightos, building products end to end.',
   'hero.available': 'Available for new projects',
   'hero.based': 'Based in Buenos Aires',
   'hero.time': 'Local time',
@@ -111,7 +111,7 @@ const es: Record<UIKey, string> = {
 
   'hero.role': 'Desarrollador full-stack',
   'hero.intro':
-    'Más de {years} años construyendo software, desde releases .NET corporativos hasta SaaS multi-tenant. Hoy en Freightos y harneXia, desarrollando productos de punta a punta.',
+    'Más de {years} años construyendo software, desde releases .NET corporativos hasta SaaS multi-tenant. Hoy en Freightos, desarrollando productos de punta a punta.',
   'hero.available': 'Disponible para nuevos proyectos',
   'hero.based': 'Desde Buenos Aires',
   'hero.time': 'Hora local',

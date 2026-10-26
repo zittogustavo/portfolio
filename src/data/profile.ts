@@ -260,11 +260,11 @@ export const about: Localized<string[]> = {
   en: [
     'I wrote my first production code in 2009 at Accenture Argentina, at 20. Over eight years I went from .NET developer to Scrum Master, Team Lead and Defect Lead of releases with hundreds of bugs and a hundred people across the globe.',
     'Then I went back to what I enjoy most: building. PHP and JavaScript with whatever framework the job needed, for a public prosecutor’s office, an events startup and a freight-tech scale-up, living in Buenos Aires, Málaga and Barcelona along the way.',
-    'Today I’m back home in Argentina: still at Freightos, remotely, and building products end to end with harneXia on a modern TypeScript stack. Just as curious about new tech as on day one. If you have a role or an idea where I could fit, let’s talk.',
+    'Today I’m back home in Argentina: still at Freightos, remotely, and building products end to end on a modern stack. Just as curious about new tech as on day one. If you have a role or an idea where I could fit, let’s talk.',
   ],
   es: [
     'Escribí mi primer código productivo en 2009 en Accenture Argentina, con 20 años. En ocho años pasé de desarrollador .NET a Scrum Master, Team Lead y Defect Lead de releases con cientos de bugs y un centenar de personas en todo el mundo.',
     'Después volví a lo que más disfruto: construir. PHP y JavaScript con el framework que hiciera falta, para un ministerio público, una startup de eventos y una scale-up de logística, viviendo en Buenos Aires, Málaga y Barcelona en el camino.',
-    'Hoy estoy de vuelta en Argentina: sigo en Freightos, en remoto, y construyo productos de punta a punta con harneXia sobre un stack moderno en TypeScript. Con la misma curiosidad por la tecnología que el primer día. Si tenés un puesto o una idea donde pueda sumar, hablemos.',
+    'Hoy estoy de vuelta en Argentina: sigo en Freightos, en remoto, y construyo productos de punta a punta sobre un stack moderno. Con la misma curiosidad por la tecnología que el primer día. Si tenés un puesto o una idea donde pueda sumar, hablemos.',
   ],
 };
